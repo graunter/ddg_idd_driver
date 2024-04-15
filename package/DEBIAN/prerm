@@ -1,0 +1,8 @@
+#!/bin/bash
+
+service ddg-idd-driver stop
+
+rm -f /etc/ddg_idd_driver/ddg_idd_driver.log
+# rm -f /etc/ddg_idd_driver/ddg_states.json
+# rm -f /etc/ddg_idd_driver/idd_states.json
+rm -fr /etc/ddg_idd_driver/__pycache__

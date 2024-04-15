@@ -1,0 +1,11 @@
+ddg-idd-driver (1.0.9) stable; urgency=medium
+
+[Vladimir Stativa]
+* 1.0.9 - compatible with Python3.5.3
+[Vladimir Stativa]
+* 1.0.8 - fixed DDG error 
+[Vladimir Stativa]
+* 1.0.7 - added IDD 
+[Vladimir Stativa]
+* 1.0.6 - int value = correct
+

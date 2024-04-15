@@ -1,0 +1,6 @@
+#!/bin/bash
+
+update-rc.d ddg-idd-driver remove
+
+#rm -fr /etc/ddg_idd_driver
+

@@ -1,0 +1,7 @@
+#!/bin/bash
+
+chmod +x /etc/init.d/ddg-idd-driver
+
+update-rc.d ddg-idd-driver defaults
+
+service ddg-idd-driver start
