@@ -1,18 +1,25 @@
-import os.path
+import os
 import json
 import logging
 import datetime
+from pathlib import Path
 
 controllerId = ""
 ddg_states = {}
 idd_states = {}
 
+DDG_STATE_FILE = "Andromeda/ddg_idd_driver/ddg_states.json"
+IDD_STATE_FILE = "Andromeda/ddg_idd_driver/idd_states.json"
+
 def get_ddg_states():
         
         global ddg_states 
         
-        if os.path.isfile("/etc/ddg_idd_driver/ddg_states.json"):
-            with open('/etc/ddg_idd_driver/ddg_states.json') as f:
+        InFileName = Path.home() / DDG_STATE_FILE
+
+        #if os.path.isfile("/etc/ddg_idd_driver/ddg_states.json"):
+        if os.path.isfile(InFileName):
+            with open(InFileName) as f:
                 ddg_states = json.load(f)
 
         return ddg_states
@@ -31,11 +38,13 @@ def create_new_ddg(device_name):
     return ddg_states[device_name]
 
 
-
-
 def save_ddg_state(list):   
     logging.debug("Saving ddg state")
-    with open("/etc/ddg_idd_driver/ddg_states.json", "w") as outfile:
+
+    OutFileName = Path.home() / DDG_STATE_FILE
+    os.makedirs(os.path.dirname(OutFileName), exist_ok=True)
+
+    with open(OutFileName, 'w+') as outfile:
         json.dump(list, outfile, indent=4)
 
     logging.debug(str(list))
@@ -71,8 +80,10 @@ def get_idd_states():
 
     global idd_states 
 
-    if os.path.isfile("/etc/ddg_idd_driver/idd_states.json"):
-        with open('/etc/ddg_idd_driver/idd_states.json') as f:
+    InFileName = Path.home() / IDD_STATE_FILE
+
+    if os.path.isfile(InFileName):
+        with open(InFileName) as f:            
             idd_states = json.load(f)
 
     return idd_states
@@ -80,10 +91,12 @@ def get_idd_states():
     
 def save_idd_state(list):
     logging.debug("Saving idd state : " + str(list))
-    with open("/etc/ddg_idd_driver/idd_states.json", "w") as outfile:
+    
+    OutFileName = Path.home() / IDD_STATE_FILE
+    os.makedirs(os.path.dirname(OutFileName), exist_ok=True)
+
+    with open(OutFileName, 'w+') as outfile:
         json.dump(list, outfile, indent=4)
-
-
 
 
 def get_controller_id():

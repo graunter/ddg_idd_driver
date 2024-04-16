@@ -3,10 +3,11 @@ import paho.mqtt.client
 from threading import Timer         
 import datetime
 import json
+import yaml
 from threading import Thread
 import time
 import params
-
+from pathlib import Path
 
 IDD_SEND_STATE_TIME = 7200 # 120min
 IDD_COUNTER_PING_TIME = 60 # 1min
@@ -20,6 +21,9 @@ class IDDDevice:
         self.device_state = device_state
         self.ping_counter = 0
 
+        ConfigLocation = Path(__file__).with_name('config.yaml')
+        with ConfigLocation.open('r') as cfg_file:
+            self.config = yaml.safe_load(cfg_file)
 
     def on_message(self, client, userdata, msg):
         logging.debug("IDD-driver Received message: "+ msg.topic+" "+str(msg.payload))
@@ -55,7 +59,7 @@ class IDDDevice:
             if self.device_state["state"] == "offline":
                 save = True
 
-            if self.device_state[params.VOLTAGE_L1_NAME] < 100.0 or self.device_state[params.VOLTAGE_L2_NAME] < 100.0 or self.device_state[params.VOLTAGE_L3_NAME] < 100.0:
+            if self.device_state[params.VOLTAGE_L1_NAME] < self.config['VThreshold'] or self.device_state[params.VOLTAGE_L2_NAME] < self.config['VThreshold'] or self.device_state[params.VOLTAGE_L3_NAME] < self.config['VThreshold']:
                 voltage = 0
             else:
                 voltage = 1
@@ -67,7 +71,7 @@ class IDDDevice:
             self.device_state["voltage"] = voltage
 
 
-            if self.device_state[params.CURRENT_L1_NAME] < 1.0 and self.device_state[params.CURRENT_L2_NAME] < 1.0 and self.device_state[params.CURRENT_L3_NAME] < 1.0:
+            if self.device_state[params.CURRENT_L1_NAME] < self.config['IThreshold'] and self.device_state[params.CURRENT_L2_NAME] < self.config['IThreshold'] and self.device_state[params.CURRENT_L3_NAME] < self.config['IThreshold']:
                 in_work = 0
             else:
                 in_work = 1

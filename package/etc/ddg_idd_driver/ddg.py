@@ -3,9 +3,11 @@ import paho.mqtt.client
 from threading import Timer         
 import datetime
 import json
+import yaml
 from threading import Thread
 import time
 import params
+from pathlib import Path
 
 DDG_SEND_STATE_TIME = 7200 # 120min
 DDG_SEND_ALIVE_TIME = 300 # 5min
@@ -17,6 +19,10 @@ class DDGDevice:
         self.device_name = device_name
         self.controllerId = controllerId
         self.device_state = device_state
+
+        ConfigLocation = Path(__file__).with_name('config.yaml')
+        with ConfigLocation.open('r') as cfg_file:
+            self.config = yaml.safe_load(cfg_file)
 
         print("self.device_name = " + self.device_name)
 
@@ -35,7 +41,7 @@ class DDGDevice:
                 logging.debug("wrong topic value.")
                 return save
             
-            if U > 100.0:
+            if U > self.config['VThreshold']:
                 active = 1
             else:
                 active = 0

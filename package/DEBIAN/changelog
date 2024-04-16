@@ -1,5 +1,7 @@
 ddg-idd-driver (1.0.9) stable; urgency=medium
 
+[Sergey Zhukov]
+* 1.0.10 - Configuration file
 [Vladimir Stativa]
 * 1.0.9 - compatible with Python3.5.3
 [Vladimir Stativa]
