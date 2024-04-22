@@ -20,10 +20,6 @@ class DDGDevice:
         self.controllerId = controllerId
         self.device_state = device_state
 
-        ConfigLocation = Path(__file__).with_name('config.yaml')
-        with ConfigLocation.open('r') as cfg_file:
-            self.config = yaml.safe_load(cfg_file)
-
         print("self.device_name = " + self.device_name)
 
     # The callback for when a PUBLISH message is received from the server.
@@ -74,6 +70,10 @@ class DDGDevice:
             return save
      
     def start(self):
+
+        ConfigLocation = Path(__file__).with_name('config.yaml')
+        with ConfigLocation.open('r') as cfg_file:
+            self.config = yaml.safe_load(cfg_file)
 
         send_state_th = Thread(target=self.send_state_th_make)
         send_state_th.daemon = True

@@ -1,5 +1,6 @@
 import os
 import json
+import yaml
 import logging
 import datetime
 from pathlib import Path
@@ -8,21 +9,23 @@ controllerId = ""
 ddg_states = {}
 idd_states = {}
 
-DDG_STATE_FILE = "Andromeda/ddg_idd_driver/ddg_states.json"
-IDD_STATE_FILE = "Andromeda/ddg_idd_driver/idd_states.json"
+#COMMON_PATH = "Andromeda/"
+COMMON_PATH = ""
+DDG_STATE_FILE = COMMON_PATH + "ddg_idd_driver/ddg_states.json"
+IDD_STATE_FILE = COMMON_PATH + "ddg_idd_driver/idd_states.json"
 
 def get_ddg_states():
         
-        global ddg_states 
-        
-        InFileName = Path.home() / DDG_STATE_FILE
+    global ddg_states 
+    
+    InFileName = Path.home() / DDG_STATE_FILE
 
-        #if os.path.isfile("/etc/ddg_idd_driver/ddg_states.json"):
-        if os.path.isfile(InFileName):
-            with open(InFileName) as f:
-                ddg_states = json.load(f)
+    #if os.path.isfile("/etc/ddg_idd_driver/ddg_states.json"):
+    if os.path.isfile(InFileName):
+        with open(InFileName) as f:
+            ddg_states = json.load(f)
 
-        return ddg_states
+    return ddg_states
 
 
 def create_new_ddg(device_name):
@@ -31,7 +34,11 @@ def create_new_ddg(device_name):
         logging.error("Error. Try to create DDG copy")
         return
 
-    ddg_states[device_name] = {"last_start":"None", "last_stop":"None", "active":0, "model":"place DDG model here"}
+    ConfigLocation = Path(__file__).with_name('config.yaml')
+    with ConfigLocation.open('r') as cfg_file:
+        config = yaml.safe_load(cfg_file)
+
+    ddg_states[device_name] = {"last_start":"None", "last_stop":"None", "active":0, "model":"place DDG model here", "is_panel":config['IsPanel']}
     save_ddg_state(ddg_states)
     logging.info("Creating new Device:" + device_name)
     

@@ -21,10 +21,6 @@ class IDDDevice:
         self.device_state = device_state
         self.ping_counter = 0
 
-        ConfigLocation = Path(__file__).with_name('config.yaml')
-        with ConfigLocation.open('r') as cfg_file:
-            self.config = yaml.safe_load(cfg_file)
-
     def on_message(self, client, userdata, msg):
         logging.debug("IDD-driver Received message: "+ msg.topic+" "+str(msg.payload))
 
@@ -114,6 +110,10 @@ class IDDDevice:
     
 
     def start(self):
+
+        ConfigLocation = Path(__file__).with_name('config.yaml')
+        with ConfigLocation.open('r') as cfg_file:
+            self.config = yaml.safe_load(cfg_file)
 
         send_state_th = Thread(target=self.send_state_th_make)
         send_state_th.daemon = True
