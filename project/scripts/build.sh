@@ -21,20 +21,20 @@ EXE_NAME=$PROJECT_NAME
 
 # rm $EXE_OUTPUT_PATH/$EXE_NAME 2> /dev/null
 # rm ../../build/${PROJECT_NAME}_${VERSION}_${ARCHITECTURE}.deb 2> /dev/null
-rm -rf 
+rm -rf $OUTPUT_PATH
 
 #copy source to build platform:
 cmd="mkdir -p $BUILD_PATH"
-ssh $USER@$BUILD_PLATFORM_ADDRESS -p $BUILD_PLATFORM_PORT "$cmd" 
-scp -P $BUILD_PLATFORM_PORT ../src/*.* $USER@$BUILD_PLATFORM_ADDRESS:$BUILD_PATH
+sshpass -p $BUILD_PLATFORM_PASS ssh $USER@$BUILD_PLATFORM_ADDRESS -p $BUILD_PLATFORM_PORT "$cmd" 
+sshpass -p $BUILD_PLATFORM_PASS scp -P $BUILD_PLATFORM_PORT ../src/*.* $USER@$BUILD_PLATFORM_ADDRESS:$BUILD_PATH
 
 #compile source
 cmd="pyinstaller --onefile $BUILD_PATH/main.py -n '$EXE_NAME' --specpath $BUILD_PATH --distpath $DIST_PATH"
-ssh $USER@$BUILD_PLATFORM_ADDRESS -p $BUILD_PLATFORM_PORT "$cmd" 
+sshpass -p $BUILD_PLATFORM_PASS ssh $USER@$BUILD_PLATFORM_ADDRESS -p $BUILD_PLATFORM_PORT "$cmd" 
 
 echo "coping result to local path..."
 mkdir -p $EXE_OUTPUT_PATH
-scp -P $BUILD_PLATFORM_PORT $USER@$BUILD_PLATFORM_ADDRESS:$DIST_PATH/$EXE_NAME $EXE_OUTPUT_PATH
+sshpass -p $BUILD_PLATFORM_PASS scp -P $BUILD_PLATFORM_PORT $USER@$BUILD_PLATFORM_ADDRESS:$DIST_PATH/$EXE_NAME $EXE_OUTPUT_PATH
 
 # echo "cleaning remote path..."
 # cmd="rm -rf $BUILD_PATH"

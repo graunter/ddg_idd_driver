@@ -200,8 +200,11 @@ service ddg-idd-driver status - статус
 
 ## Сборка пакета:
 
-    - перейти в папку ../ddg_idd_driver
-    - dpkg-deb -b package ddg-idd-driver_1.0.9_all.deb
+### Для инсталлятора в виде скриптов Python
+    - перейти в папку 'project/scripts/package'
+    - dpkg-deb -b package ddg-idd-driver_version_all.deb
 
-
+### Для инсталлятора в виде исполняемых файлов
+    - перейти в папку 'project/scripts/'
+    - ./build.sh 'адрес_машины_с_компилятором' 'порт_для_подключения' 'пароль_root'
 
