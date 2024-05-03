@@ -9,10 +9,10 @@
 
 ### Управление сервисом:
 ```
-service ddg-idd-driver start - запустить
-service ddg-idd-driver stop - остановить
-service ddg-idd-driver restart - перезапустить
-service ddg-idd-driver status - статус
+service ddg-idd-driver start    - запустить
+service ddg-idd-driver stop     - остановить
+service ddg-idd-driver restart  - перезапустить
+service ddg-idd-driver status   - статус
 ```
 
 ## Основные положения по ДГУ:
@@ -23,7 +23,7 @@ service ddg-idd-driver status - статус
 
     >тип данных - int/float
 
-2. Сервис `ddg-idd-driver` при старте создает файл: `~/ddg_idd_driver/ddg_states.json`. В нем он хранит все последние состояния устройств и модель. Устройства создаются в этом файле после первого принятого сообщения от счетчика. Если при запуске сервиса файл уже существует, то будут немедленно отправлены все параметры состояния 
+2. Сервис `ddg-idd-driver` при старте создает файл: `~/ddg-idd-driver/ddg_states.json`. В нем он хранит все последние состояния устройств и модель. Устройства создаются в этом файле после первого принятого сообщения от счетчика. Если при запуске сервиса файл уже существует, то будут немедленно отправлены все параметры состояния 
 
 3. Формат файла ddg_state.json:
 
@@ -62,13 +62,13 @@ service ddg-idd-driver status - статус
 ### Ввод модели ДГУ:
 
     - Остановить службу: `service ddg-idd-driver stop`
-    - Вписать модель в соответствующее устройство в файле /etc/ddg_idd_driver/ddg_states.json
+    - Вписать модель в соответствующее устройство в файле /etc/ddg-idd-driver/ddg_states.json
     - Запустить службу: `service ddg-idd-driver start`
 
 ### Передаваемые топики и времена:
 
 ```
-По изменению: Urms L1 > 100.0 -> active = 1
+По изменению: Urms L1 > VThreshold -> active = 1
 
 /devices/<device_name>/controls/active <1/0>
 /devices/<device_name>/controls/stop time <time>
@@ -200,11 +200,18 @@ service ddg-idd-driver status - статус
 
 ## Сборка пакета:
 
-### Для инсталлятора в виде скриптов Python
-    - перейти в папку 'project/scripts/package'
-    - dpkg-deb -b package ddg-idd-driver_version_all.deb
-
 ### Для инсталлятора в виде исполняемых файлов
-    - перейти в папку 'project/scripts/'
-    - ./build.sh 'адрес_машины_с_компилятором' 'порт_для_подключения' 'пароль_root'
+
+- перейти в папку 'project/scripts'
+- запустить скрипт build.sh с параметрами
+    - адрес машины для сборки
+    - порт для подключения ssh
+    - пароль пользователя root
+
+пример:
+```
+cd project/scripts
+./build.sh 192.168.1.100 22 test
+```
+
 

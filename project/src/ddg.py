@@ -8,6 +8,8 @@ from threading import Thread
 import time
 import params
 from pathlib import Path
+import os
+import sys
 
 DDG_SEND_STATE_TIME = 7200 # 120min
 DDG_SEND_ALIVE_TIME = 300 # 5min
@@ -71,8 +73,14 @@ class DDGDevice:
      
     def start(self):
 
-        ConfigLocation = Path(__file__).with_name('config.yaml')
-        with ConfigLocation.open('r') as cfg_file:
+        if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
+            bundle_dir = Path(sys._MEIPASS)
+            os.chdir(bundle_dir)
+            logging.debug("Current dir is "+str(bundle_dir))
+        #else:
+        #    bundle_dir = Path(__file__).parent
+
+        with open('/etc/ddg-idd-driver/config.yaml', 'r') as cfg_file:
             self.config = yaml.safe_load(cfg_file)
 
         send_state_th = Thread(target=self.send_state_th_make)

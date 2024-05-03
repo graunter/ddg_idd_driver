@@ -10,10 +10,11 @@
 # Description:       STDU DDG and IDD driver
 ### END INIT INFO
  
-WORKING_PATH=/etc/ddg_idd_driver
-DAEMON="$WORKING_PATH/start.sh"
 NAME=ddg-idd-driver
 DESC="ddg-idd-driver"
+WORKING_PATH=/etc/${NAME}
+EXE_PATH=/opt/${NAME}
+DAEMON="$WORKING_PATH/start.sh"
 PIDFILE=/var/run/$NAME.pid
 SCRIPTNAME=/etc/init.d/$NAME
 
@@ -21,25 +22,25 @@ SCRIPTNAME=/etc/init.d/$NAME
 . /lib/init/vars.sh
 
  start() {
-    if [ -e "/var/run/ddg-idd-driver.pid" ];then echo "Failed to start\nThere is pidfile /var/run/ddg-idd-driver.pid" >&2;return 1;fi
+    if [ -e "/var/run/${NAME}.pid" ];then echo "Failed to start\nThere is pidfile /var/run/${NAME}.pid" >&2;return 1;fi
     echo "Starting $NAME" >&2
     start-stop-daemon --start  --pidfile $PIDFILE --exec $DAEMON >> /dev/null 2>&1
     echo "Service $NAME started" >&2
   }
 
-  stop() {
+stop() {
   echo "Stopping $NAME service" >&2
   start-stop-daemon --stop --remove-pidfile --pidfile $PIDFILE --retry=TERM/30/KILL/5 --pidfile $PIDFILE
   echo "Service $NAME stopped" >&2
 
-  echo "Service stopped" >> $WORKING_PATH/ddg_idd_driver.log
+  echo "Service stopped" >> $WORKING_PATH/${NAME}.log
 }
 
 status(){
-    if [ "$(ps -ef | grep -v grep | grep /etc/ddg_idd_driver/main.py | wc -l)" != "0" ]
+    if [ "$(ps -ef | grep -v grep | grep ${EXE_PATH}/${NAME} | wc -l)" != "0" ]
     then
         log_success_msg "${NAME} is running"
-        echo "${NAME} is running $(ps -ef | grep -v grep | grep ddg-idd | wc -l)" 
+        echo "${NAME} is running $(ps -ef | grep -v grep | grep ${NAME} | wc -l)" 
         return 0
     else
         log_failure_msg "${NAME} is not running"

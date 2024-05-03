@@ -12,12 +12,14 @@ BUILD_PLATFORM_PASS=$3
 
 #build machine settings:
 USER="root"
-BUILD_PATH="~/build_dir_$PROJECT_NAME"
-DIST_PATH="~/build_dir_$PROJECT_NAME/dist"
+BUILD_PATH="~/build-dir-$PROJECT_NAME"
+DIST_PATH="~/build-dir-$PROJECT_NAME/dist"
+EXE_NAME="$PROJECT_NAME"
 
 OUTPUT_PATH="../../build/$ARCHITECTURE"
-EXE_OUTPUT_PATH="$OUTPUT_PATH/package/opt/$PROJECT_NAME"
-EXE_NAME=$PROJECT_NAME
+PACKAGE_PATH="$OUTPUT_PATH/package"
+EXE_OUTPUT_PATH="$PACKAGE_PATH/opt/$PROJECT_NAME"
+
 
 # rm $EXE_OUTPUT_PATH/$EXE_NAME 2> /dev/null
 # rm ../../build/${PROJECT_NAME}_${VERSION}_${ARCHITECTURE}.deb 2> /dev/null
@@ -29,7 +31,11 @@ sshpass -p $BUILD_PLATFORM_PASS ssh $USER@$BUILD_PLATFORM_ADDRESS -p $BUILD_PLAT
 sshpass -p $BUILD_PLATFORM_PASS scp -P $BUILD_PLATFORM_PORT ../src/*.* $USER@$BUILD_PLATFORM_ADDRESS:$BUILD_PATH
 
 #compile source
-cmd="pyinstaller --onefile $BUILD_PATH/main.py -n '$EXE_NAME' --specpath $BUILD_PATH --distpath $DIST_PATH"
+cmd1="--add-data \"config.yaml:.\""
+cmd2="--distpath $DIST_PATH"
+cmd3="--specpath $BUILD_PATH"
+cmd="pyinstaller --onefile -y -n '$EXE_NAME' $cmd1 $cmd2 $cmd3 $BUILD_PATH/main.py"
+echo $cmd
 sshpass -p $BUILD_PLATFORM_PASS ssh $USER@$BUILD_PLATFORM_ADDRESS -p $BUILD_PLATFORM_PORT "$cmd" 
 
 echo "coping result to local path..."
@@ -41,5 +47,7 @@ sshpass -p $BUILD_PLATFORM_PASS scp -P $BUILD_PLATFORM_PORT $USER@$BUILD_PLATFOR
 # ssh $USER@$BUILD_PLATFORM_ADDRESS -p $BUILD_PLATFORM_PORT "$cmd" 
 
 cp -a package $OUTPUT_PATH
-version=$(cat $OUTPUT_PATH/package/DEBIAN/control | grep 'Version:' | awk '{print$2}')
-dpkg-deb --root-owner-group -b $OUTPUT_PATH/package "$OUTPUT_PATH/ddg-idd-driver_${version}_${ARCHITECTURE}.deb"
+cp ../../project/src/config.yaml $PACKAGE_PATH/etc/$PROJECT_NAME/
+
+version=$(cat $PACKAGE_PATH/DEBIAN/control | grep 'Version:' | awk '{print$2}')
+dpkg-deb --root-owner-group -Z gzip -b $PACKAGE_PATH "${OUTPUT_PATH}/${EXE_NAME}-${version}-${ARCHITECTURE}.deb"

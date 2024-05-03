@@ -11,8 +11,8 @@ idd_states = {}
 
 #COMMON_PATH = "Andromeda/"
 COMMON_PATH = ""
-DDG_STATE_FILE = COMMON_PATH + "ddg_idd_driver/ddg_states.json"
-IDD_STATE_FILE = COMMON_PATH + "ddg_idd_driver/idd_states.json"
+DDG_STATE_FILE = COMMON_PATH + "ddg-idd-driver/ddg_states.json"
+IDD_STATE_FILE = COMMON_PATH + "ddg-idd-driver/idd_states.json"
 
 def get_ddg_states():
         
@@ -20,7 +20,7 @@ def get_ddg_states():
     
     InFileName = Path.home() / DDG_STATE_FILE
 
-    #if os.path.isfile("/etc/ddg_idd_driver/ddg_states.json"):
+    #if os.path.isfile("/etc/ddg-idd-driver/ddg_states.json"):
     if os.path.isfile(InFileName):
         with open(InFileName) as f:
             ddg_states = json.load(f)
