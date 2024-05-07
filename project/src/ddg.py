@@ -91,6 +91,12 @@ class DDGDevice:
         send_alive_th.daemon = True
         send_alive_th.start()
 
+        now_time = str(datetime.datetime.now(tz=datetime.timezone.utc)).replace(" ", "T").replace("+00:00","")
+
+        msgIsPanel = {"type":{"data":{"controllerId":self.controllerId, "topic":"/devices/" + self.device_name + "/controls/is_panel", "time":now_time, "value":self.config['IsPanel']}}, "status": "UPDATE"}
+        self.mqtt_client.publish("/Controller/Out/Value", payload=str(json.dumps(msgIsPanel)), qos=0, retain=False)
+
+
     def send_state_th_make(self):
         while True:
 

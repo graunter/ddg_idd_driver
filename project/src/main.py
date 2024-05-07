@@ -13,6 +13,7 @@ import params
 
 import datetime
 import store
+import signal
 
 DEBUG_LVL_KEY = "-d" # debug/info
 
@@ -40,6 +41,17 @@ logging.basicConfig(level=loglevel)
 logging.info("\n\n\n ***DDG & IDD Driver Started***\n")
 logging.info('DDG devices: ' + str(list(ddg_states.keys())))
 logging.info('IDD devices: ' + str(list(idd_states.keys())))
+
+def signal_handler(signal, frame):
+    print('You pressed Ctrl+C!')
+    client.disconnect()
+    sys.exit()
+
+verbose = False
+
+def debug(msg):
+    if verbose:
+        print (msg + "\n")
 
 # The callback for when the client receives a CONNACK response from the server.
 def on_connect(client, userdata, flags, rc):
@@ -102,15 +114,21 @@ def on_message(client, userdata, msg):
             if save:
                 store.save_idd_state(idd_states)
 
-client = mqtt.Client()
-client.on_connect = on_connect
-client.on_message = on_message
 
-client.connect("localhost", 1883, 60)
-client.loop_start()
+if __name__ == "__main__":
 
-while True:
-    time.sleep(1800)
-    logging.debug("Connected to MQTT "+str(client.is_connected()))
-    store.save_ddg_state(ddg_states)
-    store.save_idd_state(idd_states)
+    signal.signal(signal.SIGINT, signal_handler)
+    signal.signal(signal.SIGTERM, signal_handler)
+
+    client = mqtt.Client()
+    client.on_connect = on_connect
+    client.on_message = on_message
+
+    client.connect("localhost", 1883, 60)
+    client.loop_start()
+
+    while True:
+        time.sleep(1800)
+        logging.debug("Connected to MQTT "+str(client.is_connected()))
+        store.save_ddg_state(ddg_states)
+        store.save_idd_state(idd_states)
