@@ -3,9 +3,17 @@
 
 ### Установка
 
+#### Через центральный репозиторий
+
 1. Обновить индекс - ```apt update```
 2. Установить драйвер - ```apt install ddg-idd-driver```
 3. проверить состояние службы - ```service ddg-idd-driver status```
+
+#### Из оффлайн пакета
+
+```
+dpkg -i ddg-idd-driver-<version>-<platfor>.deb
+```
 
 ### Управление сервисом:
 ```
@@ -33,19 +41,22 @@ service ddg-idd-driver status   - статус
         "last_start": "2023-11-22T12:38:02.983035",
         "last_stop": "2023-11-22T10:59:25.873637",
         "active": 1,
-        "model": "place DDG model here"
+        "model": "place DDG model here",
+        "is_panel": false
     },
     "bDDGf0r0_bDDGf0r0_27_n2_DDG": {
         "last_start": "2023-11-22T10:59:50.156850",
         "last_stop": "2023-11-22T10:59:54.200919",
         "active": 0,
-        "model": "place DDG model here"
+        "model": "place DDG model here",
+        "is_panel": false
     },
     "bDDGf0r0_bDDGf0r0_27_n3_DDG": {
         "last_start": "2023-11-22T12:37:52.723140",
         "last_stop": "2023-11-22T11:55:40.315339",
         "active": 1,
-        "model": "place DDG model here"
+        "model": "place DDG model here",
+        "is_panel": false
     }
 }
 ```
@@ -59,13 +70,21 @@ service ddg-idd-driver status   - статус
 
 `model` - модель ДГУ. НЕОБХОДИМО ВВЕСТИ ВРУЧНУЮ
 
-### Ввод модели ДГУ:
+`is_panel` - тип панели управления. Изначально берется из конфигурационного файла `/etc/ddg-idd-driver/config.yaml`
+            данный параметр может быть отредактирован вручную для отправки на сервер
+
+### Ввод модели и типа ДГУ:
 
     - Остановить службу: `service ddg-idd-driver stop`
-    - Вписать модель в соответствующее устройство в файле /etc/ddg-idd-driver/ddg_states.json
+    - Вписать параметры в соответствующее устройство в файле /etc/ddg-idd-driver/ddg_states.json
     - Запустить службу: `service ddg-idd-driver start`
 
 ### Передаваемые топики и времена:
+```
+При старте
+
+/devices/<device_name>/controls/is_panel <boolean>
+```
 
 ```
 По изменению: Urms L1 > VThreshold -> active = 1
@@ -86,6 +105,7 @@ service ddg-idd-driver status   - статус
 /devices/<device_name>/controls/stop time <time>
 /devices/<device_name>/controls/last start time <time>
 /devices/<device_name>/controls/ddg model <model>
+/devices/<device_name>/controls/is_panel <boolean>
 ```
 
 
@@ -103,7 +123,7 @@ service ddg-idd-driver status   - статус
     >тип данных - int/float
 
 
-2. Сервис ddg-idd-driver при старте создает файл idd_states.json. в нем он хранит все последние состояния устройств. Устройства создаются в этом файле после первого принятого сообщения от счетчика. Если при запуске сервиса файл уже существует, то немедленно будут отправлены все параметры состояния. 
+2. Сервис `ddg-idd-driver` при старте создает файл ``~/ddg-idd-driver/idd_states.json`. в нем он хранит все последние состояния устройств. Устройства создаются в этом файле после первого принятого сообщения от счетчика. Если при запуске сервиса файл уже существует, то немедленно будут отправлены все параметры состояния. 
 
 3. Формат файла idd_state.json:
 
