@@ -12,7 +12,7 @@
 #### Из оффлайн пакета
 
 ```
-dpkg -i ddg-idd-driver-<version>-<platfor>.deb
+dpkg -i ddg-idd-driver-<version>-<platform>.deb
 ```
 
 ### Управление сервисом:
