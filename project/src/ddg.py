@@ -137,6 +137,9 @@ class DDGDevice:
 
         self.mqtt_client.publish("/Controller/Out/Value", payload=str(json.dumps(msgModel)), qos=0, retain=False)
 
+        msgIsPanel = {"type":{"data":{"controllerId":self.controllerId, "topic":"/devices/" + self.device_name + "/controls/is_panel", "time":now_time, "value":self.config['IsPanel']}}, "status": "UPDATE"}
+        self.mqtt_client.publish("/Controller/Out/Value", payload=str(json.dumps(msgIsPanel)), qos=0, retain=False)
+
         logging.debug(str(json.dumps(msgActive)))
         logging.debug(str(json.dumps(msgStopTime)))
         logging.debug(str(json.dumps(msgStartTime)))
