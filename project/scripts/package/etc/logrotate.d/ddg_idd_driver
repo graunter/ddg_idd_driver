@@ -1,9 +1,9 @@
-/etc/ddg-idd-driver/ddg-idd-driver.log {
+/var/log/ddg-idd-driver/ddg-idd-driver.log {
     rotate 4
     missingok
     notifempty
     size=5k 
-    olddir /etc/ddg-idd-driver/oldlogs
+    olddir /var/log/ddg-idd-driver/oldlogs
     copytruncate
     nocompress
 }
