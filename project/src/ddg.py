@@ -10,6 +10,7 @@ import params
 from pathlib import Path
 import os
 import sys
+from my_config import MyConfig
 
 DDG_SEND_STATE_TIME = 7200 # 120min
 DDG_SEND_ALIVE_TIME = 300 # 5min
@@ -39,7 +40,7 @@ class DDGDevice:
                 logging.debug("wrong topic value.")
                 return save
             
-            if U > self.config['VThreshold']:
+            if U > self.config.CfgData['VThreshold']:
                 active = 1
             else:
                 active = 0
@@ -80,8 +81,7 @@ class DDGDevice:
         #else:
         #    bundle_dir = Path(__file__).parent
 
-        with open('/etc/ddg-idd-driver/config.yaml', 'r') as cfg_file:
-            self.config = yaml.safe_load(cfg_file)
+        self.config = MyConfig()
 
         send_state_th = Thread(target=self.send_state_th_make)
         send_state_th.daemon = True
@@ -93,7 +93,7 @@ class DDGDevice:
 
         now_time = str(datetime.datetime.now(tz=datetime.timezone.utc)).replace(" ", "T").replace("+00:00","")
 
-        msgIsPanel = {"type":{"data":{"controllerId":self.controllerId, "topic":"/devices/" + self.device_name + "/controls/is_panel", "time":now_time, "value":self.config['IsPanel']}}, "status": "UPDATE"}
+        msgIsPanel = {"type":{"data":{"controllerId":self.controllerId, "topic":"/devices/" + self.device_name + "/controls/is_panel", "time":now_time, "value":self.config.CfgData['IsPanel']}}, "status": "UPDATE"}
         self.mqtt_client.publish("/Controller/Out/Value", payload=str(json.dumps(msgIsPanel)), qos=0, retain=False)
 
 
@@ -137,7 +137,7 @@ class DDGDevice:
 
         self.mqtt_client.publish("/Controller/Out/Value", payload=str(json.dumps(msgModel)), qos=0, retain=False)
 
-        msgIsPanel = {"type":{"data":{"controllerId":self.controllerId, "topic":"/devices/" + self.device_name + "/controls/is_panel", "time":now_time, "value":self.config['IsPanel']}}, "status": "UPDATE"}
+        msgIsPanel = {"type":{"data":{"controllerId":self.controllerId, "topic":"/devices/" + self.device_name + "/controls/is_panel", "time":now_time, "value":self.config.CfgData['IsPanel']}}, "status": "UPDATE"}
         self.mqtt_client.publish("/Controller/Out/Value", payload=str(json.dumps(msgIsPanel)), qos=0, retain=False)
 
         logging.debug(str(json.dumps(msgActive)))

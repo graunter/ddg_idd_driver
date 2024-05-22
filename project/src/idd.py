@@ -10,6 +10,7 @@ import params
 from pathlib import Path
 import os
 import sys
+from my_config import MyConfig
 
 IDD_SEND_STATE_TIME = 7200 # 120min
 IDD_COUNTER_PING_TIME = 60 # 1min
@@ -57,7 +58,7 @@ class IDDDevice:
             if self.device_state["state"] == "offline":
                 save = True
 
-            if self.device_state[params.VOLTAGE_L1_NAME] < self.config['VThreshold'] or self.device_state[params.VOLTAGE_L2_NAME] < self.config['VThreshold'] or self.device_state[params.VOLTAGE_L3_NAME] < self.config['VThreshold']:
+            if self.device_state[params.VOLTAGE_L1_NAME] < self.config.CfgData['VThreshold'] or self.device_state[params.VOLTAGE_L2_NAME] < self.config.CfgData['VThreshold'] or self.device_state[params.VOLTAGE_L3_NAME] < self.config.CfgData['VThreshold']:
                 voltage = 0
             else:
                 voltage = 1
@@ -69,7 +70,7 @@ class IDDDevice:
             self.device_state["voltage"] = voltage
 
 
-            if self.device_state[params.CURRENT_L1_NAME] < self.config['IThreshold'] and self.device_state[params.CURRENT_L2_NAME] < self.config['IThreshold'] and self.device_state[params.CURRENT_L3_NAME] < self.config['IThreshold']:
+            if self.device_state[params.CURRENT_L1_NAME] < self.config.CfgData['IThreshold'] and self.device_state[params.CURRENT_L2_NAME] < self.config.CfgData['IThreshold'] and self.device_state[params.CURRENT_L3_NAME] < self.config.CfgData['IThreshold']:
                 in_work = 0
             else:
                 in_work = 1
@@ -120,8 +121,7 @@ class IDDDevice:
         #else:
         #    bundle_dir = Path(__file__).parent
 
-        with open('/etc/ddg-idd-driver/config.yaml', 'r') as cfg_file:
-            self.config = yaml.safe_load(cfg_file)
+        self.config = MyConfig()
 
         send_state_th = Thread(target=self.send_state_th_make)
         send_state_th.daemon = True

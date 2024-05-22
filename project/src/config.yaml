@@ -1,3 +1,7 @@
 VThreshold: 100
 IThreshold: 1.00
 IsPanel: False
+
+broker:
+    host: "localhost"
+    port: 1883

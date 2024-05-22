@@ -15,12 +15,14 @@ import datetime
 import store
 import signal
 
+from my_config import MyConfig
+
 DEBUG_LVL_KEY = "-d" # debug/info
 
 if(DEBUG_LVL_KEY in sys.argv):
-    loglevel = sys.argv[sys.argv.index(DEBUG_LVL_KEY) + 1]
+    loglevel = logging.DEBUG
 else:
-    loglevel = "info"
+    loglevel = logging.INFO 
 
 controllerId = store.get_controller_id()
 ddg_states = store.get_ddg_states()
@@ -28,13 +30,6 @@ idd_states = store.get_idd_states()
 
 ddg_list = []
 idd_list = []
-
-if(loglevel == "debug"):
-    loglevel = logging.DEBUG
-elif (loglevel == "info"):
-    loglevel = logging.INFO
-else:
-   loglevel = logging.INFO 
 
 logging.basicConfig(level=loglevel)
 
@@ -120,11 +115,13 @@ if __name__ == "__main__":
     signal.signal(signal.SIGINT, signal_handler)
     signal.signal(signal.SIGTERM, signal_handler)
 
+    Cfg = MyConfig()
+
     client = mqtt.Client()
     client.on_connect = on_connect
     client.on_message = on_message
 
-    client.connect("localhost", 1883, 60)
+    client.connect(Cfg.host, Cfg.port)
     client.loop_start()
 
     while True:

@@ -20,7 +20,6 @@ def get_ddg_states():
     
     InFileName = Path.home() / DDG_STATE_FILE
 
-    #if os.path.isfile("/etc/ddg-idd-driver/ddg_states.json"):
     if os.path.isfile(InFileName):
         with open(InFileName) as f:
             ddg_states = json.load(f)
