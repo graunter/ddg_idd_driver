@@ -30,7 +30,10 @@ class DDGDevice:
         logging.debug("DDG-driver Received message: "+ msg.topic+" "+str(msg.payload))
 
         
-        if msg.topic.endswith(params.VOLTAGE_L1_NAME) and msg.topic.startswith("/devices/" + self.device_name):
+        if (
+            msg.topic.endswith(params.VOLTAGE_L1_NAME) 
+            and msg.topic.startswith("/devices/" + self.device_name)
+        ):
 
             save = False
 
@@ -56,17 +59,46 @@ class DDGDevice:
                     logging.debug("DDG TURNED ON")
                     self.device_state["last_start"] = str(datetime.datetime.now(tz=datetime.timezone.utc)).replace(" ", "T").replace("+00:00","")
 
-                    msgStartTime = {"type":{"data":{"controllerId":self.controllerId, "topic":"/devices/" + self.device_name + "/controls/last start time", "time":now_time, "value":str(self.device_state["last_start"])}}, "status": "UPDATE"}
+                    msgStartTime = {
+                        "type":{
+                            "data":{
+                                "controllerId":self.controllerId, 
+                                "topic":"/devices/" + self.device_name + "/controls/last start time", 
+                                "time":now_time, "value":str(self.device_state["last_start"])
+                            }
+                        }, 
+                        "status": "UPDATE"
+                    }
                     self.mqtt_client.publish("/Controller/Out/Value", payload=str(json.dumps(msgStartTime)), qos=0, retain=False)
                 else:
                     # ddg OFF
                     logging.debug("DDG TURNED OFF")
                     self.device_state["last_stop"] = str(datetime.datetime.now(tz=datetime.timezone.utc)).replace(" ", "T").replace("+00:00","")
 
-                    msgStopTime = {"type":{"data":{"controllerId":self.controllerId, "topic":"/devices/" + self.device_name+ "/controls/stop time", "time":now_time, "value":str(self.device_state["last_stop"])}}, "status": "UPDATE"}
+                    msgStopTime = {
+                        "type":{
+                            "data":{
+                                "controllerId":self.controllerId, 
+                                "topic":"/devices/" + self.device_name+ "/controls/stop time", 
+                                "time":now_time, 
+                                "value":str(self.device_state["last_stop"])
+                            }
+                        }, 
+                        "status": "UPDATE"
+                    }
                     self.mqtt_client.publish("/Controller/Out/Value", payload=str(json.dumps(msgStopTime)), qos=0, retain=False)
 
-                msgActive = {"type":{"data":{"controllerId":self.controllerId, "topic":"/devices/" + self.device_name + "/controls/active", "time":now_time, "value":str(active)}}, "status": "UPDATE"}
+                msgActive = {
+                    "type":{
+                        "data":{
+                            "controllerId":self.controllerId, 
+                            "topic":"/devices/" + self.device_name + "/controls/active", 
+                            "time":now_time, 
+                            "value":str(active)
+                        }
+                    }, 
+                    "status": "UPDATE"
+                }
                 self.mqtt_client.publish("/Controller/Out/Value", payload=str(json.dumps(msgActive)), qos=0, retain=False)
 
             self.device_state["active"] = active
@@ -91,11 +123,26 @@ class DDGDevice:
         send_alive_th.daemon = True
         send_alive_th.start()
 
-        now_time = str(datetime.datetime.now(tz=datetime.timezone.utc)).replace(" ", "T").replace("+00:00","")
+        self.send_is_panel_flag()
 
-        msgIsPanel = {"type":{"data":{"controllerId":self.controllerId, "topic":"/devices/" + self.device_name + "/controls/is_panel", "time":now_time, "value":self.config.CfgData['IsPanel']}}, "status": "UPDATE"}
+
+    def send_is_panel_flag(self, now_time=None):
+
+        if( now_time is None):
+            now_time = str(datetime.datetime.now(tz=datetime.timezone.utc)).replace(" ", "T").replace("+00:00","")
+
+        msgIsPanel = {
+            "type":{
+                "data":{
+                    "controllerId":self.controllerId, 
+                    "topic":"/devices/" + self.device_name + "/controls/is_panel", 
+                    "time":now_time, 
+                    "value":self.config.CfgData['IsPanel']
+                }
+            }, 
+            "status": "UPDATE"
+        }
         self.mqtt_client.publish("/Controller/Out/Value", payload=str(json.dumps(msgIsPanel)), qos=0, retain=False)
-
 
     def send_state_th_make(self):
         while True:
@@ -113,7 +160,17 @@ class DDGDevice:
 
     def send_ddg_alive(self):
         now_time = str(datetime.datetime.now(tz=datetime.timezone.utc)).replace(" ", "T").replace("+00:00","")
-        msgAlive = {"type":{"data":{"controllerId":self.controllerId, "topic":"/devices/" + self.device_name + "/controls/alive", "time":now_time, "value":now_time}}, "status": "UPDATE"}
+        msgAlive = {
+            "type":{
+                "data":{
+                    "controllerId":self.controllerId, 
+                    "topic":"/devices/" + self.device_name + "/controls/alive", 
+                    "time":now_time, 
+                    "value":now_time
+                }
+            }, 
+            "status": "UPDATE"
+        }
         self.mqtt_client.publish("/Controller/Out/Value", payload=str(json.dumps(msgAlive)), qos=0, retain=False)
         logging.debug(str(json.dumps(msgAlive)))
 
@@ -123,12 +180,53 @@ class DDGDevice:
 
         now_time = str(datetime.datetime.now(tz=datetime.timezone.utc)).replace(" ", "T").replace("+00:00","")
 
-        msgActive = {"type":{"data":{"controllerId":self.controllerId, "topic":"/devices/" + self.device_name + "/controls/active", "time":now_time, "value":str(self.device_state["active"])}}, "status": "UPDATE"}
-        msgStopTime = {"type":{"data":{"controllerId":self.controllerId, "topic":"/devices/" + self.device_name + "/controls/stop time", "time":now_time, "value":str(self.device_state["last_stop"])}}, "status": "UPDATE"}
-        msgStartTime = {"type":{"data":{"controllerId":self.controllerId, "topic":"/devices/" + self.device_name + "/controls/last start time", "time":now_time, "value":str(self.device_state["last_start"])}}, "status": "UPDATE"}
-        msgModel = {"type":{"data":{"controllerId":self.controllerId, "topic":"/devices/" + self.device_name + "/controls/ddg model", "time":now_time, "value":self.device_state["model"]}}, "status": "UPDATE"}
+        msgActive = {
+            "type":{
+                "data":{
+                    "controllerId":self.controllerId, 
+                    "topic":"/devices/" + self.device_name + "/controls/active", 
+                    "time":now_time, 
+                    "value":str(self.device_state["active"])
+                }
+            }, 
+            "status": "UPDATE"
+        }
+        msgStopTime = {
+            "type":{
+                "data":{
+                    "controllerId":self.controllerId, 
+                    "topic":"/devices/" + self.device_name + "/controls/stop time", 
+                    "time":now_time, 
+                    "value":str(self.device_state["last_stop"])
+                }
+            }, 
+            "status": "UPDATE"
+        }
+        msgStartTime = {
+            "type":{
+                "data":{
+                    "controllerId":self.controllerId, 
+                    "topic":"/devices/" + self.device_name + "/controls/last start time", 
+                    "time":now_time, 
+                    "value":str(self.device_state["last_start"])
+                }
+            }, 
+            "status": "UPDATE"
+        }
+        msgModel = {
+            "type":{
+                "data":{
+                    "controllerId":self.controllerId, 
+                    "topic":"/devices/" + self.device_name + "/controls/ddg model", 
+                    "time":now_time, 
+                    "value":self.device_state["model"]
+                }
+            }, 
+            "status": "UPDATE"
+        }
 
         self.mqtt_client.publish("/Controller/Out/Value", payload=str(json.dumps(msgActive)), qos=0, retain=False)
+        
         if self.device_state["last_stop"] != "None":
             self.mqtt_client.publish("/Controller/Out/Value", payload=str(json.dumps(msgStopTime)), qos=0, retain=False)
 
@@ -137,8 +235,7 @@ class DDGDevice:
 
         self.mqtt_client.publish("/Controller/Out/Value", payload=str(json.dumps(msgModel)), qos=0, retain=False)
 
-        msgIsPanel = {"type":{"data":{"controllerId":self.controllerId, "topic":"/devices/" + self.device_name + "/controls/is_panel", "time":now_time, "value":self.config.CfgData['IsPanel']}}, "status": "UPDATE"}
-        self.mqtt_client.publish("/Controller/Out/Value", payload=str(json.dumps(msgIsPanel)), qos=0, retain=False)
+        self.send_is_panel_flag(now_time)
 
         logging.debug(str(json.dumps(msgActive)))
         logging.debug(str(json.dumps(msgStopTime)))

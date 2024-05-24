@@ -1,7 +1,7 @@
 import yaml
 import os
 from pathlib import Path
-from constants import CONFIG_FILE
+from constants import *
 
 class MyConfig:
 

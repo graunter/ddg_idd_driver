@@ -45,11 +45,19 @@ class IDDDevice:
                 logging.debug("wrong topic value.")
                 return save
                 
-            if self.device_state[params.VOLTAGE_L1_NAME] == None or self.device_state[params.VOLTAGE_L2_NAME] == None or self.device_state[params.VOLTAGE_L3_NAME] == None:
+            if (
+                self.device_state[params.VOLTAGE_L1_NAME] == None 
+                or self.device_state[params.VOLTAGE_L2_NAME] == None 
+                or self.device_state[params.VOLTAGE_L3_NAME] == None
+            ):
                 logging.debug("IDD-driver ERROR Not enough voltage data")
                 return save
             
-            if self.device_state[params.CURRENT_L1_NAME] == None or self.device_state[params.CURRENT_L2_NAME] == None or self.device_state[params.CURRENT_L3_NAME] == None:
+            if (
+                self.device_state[params.CURRENT_L1_NAME] == None 
+                or self.device_state[params.CURRENT_L2_NAME] == None 
+                or self.device_state[params.CURRENT_L3_NAME] == None
+            ):
                 logging.debug("IDD-driver ERROR Not enough current data")
                 return save
             
@@ -58,7 +66,11 @@ class IDDDevice:
             if self.device_state["state"] == "offline":
                 save = True
 
-            if self.device_state[params.VOLTAGE_L1_NAME] < self.config.CfgData['VThreshold'] or self.device_state[params.VOLTAGE_L2_NAME] < self.config.CfgData['VThreshold'] or self.device_state[params.VOLTAGE_L3_NAME] < self.config.CfgData['VThreshold']:
+            if (
+                self.device_state[params.VOLTAGE_L1_NAME] < self.config.CfgData['VThreshold'] 
+                or self.device_state[params.VOLTAGE_L2_NAME] < self.config.CfgData['VThreshold'] 
+                or self.device_state[params.VOLTAGE_L3_NAME] < self.config.CfgData['VThreshold']
+            ):
                 voltage = 0
             else:
                 voltage = 1
@@ -70,7 +82,11 @@ class IDDDevice:
             self.device_state["voltage"] = voltage
 
 
-            if self.device_state[params.CURRENT_L1_NAME] < self.config.CfgData['IThreshold'] and self.device_state[params.CURRENT_L2_NAME] < self.config.CfgData['IThreshold'] and self.device_state[params.CURRENT_L3_NAME] < self.config.CfgData['IThreshold']:
+            if (
+                self.device_state[params.CURRENT_L1_NAME] < self.config.CfgData['IThreshold'] 
+                and self.device_state[params.CURRENT_L2_NAME] < self.config.CfgData['IThreshold'] 
+                and self.device_state[params.CURRENT_L3_NAME] < self.config.CfgData['IThreshold']
+            ):
                 in_work = 0
             else:
                 in_work = 1
@@ -103,8 +119,28 @@ class IDDDevice:
                         self.device_state["state"] = "reserved"
                         self.device_state["changed_time"] = now_time
 
-                msgState = {"type":{"data":{"controllerId":self.controllerId, "topic":"/devices/" + self.device_name + "/controls/state", "time":now_time, "value":str(self.device_state["state"])}}, "status": "UPDATE"}    
-                msgChanged = {"type":{"data":{"controllerId":self.controllerId, "topic":"/devices/" + self.device_name + "/controls/changed", "time":now_time, "value":str(self.device_state["changed_time"])}}, "status": "UPDATE"}  
+                msgState = {
+                    "type":{
+                        "data":{
+                            "controllerId":self.controllerId,
+                             "topic":"/devices/" + self.device_name + "/controls/state", 
+                             "time":now_time, 
+                             "value":str(self.device_state["state"])
+                        }
+                    }, 
+                    "status": "UPDATE"
+                }    
+                msgChanged = {
+                    "type":{
+                        "data":{
+                            "controllerId":self.controllerId, 
+                            "topic":"/devices/" + self.device_name + "/controls/changed", 
+                            "time":now_time, 
+                            "value":str(self.device_state["changed_time"])
+                        }
+                    }, 
+                    "status": "UPDATE"
+                }  
 
                 self.mqtt_client.publish("/Controller/Out/Value", payload=str(json.dumps(msgState)), qos=0, retain=False)
                 self.mqtt_client.publish("/Controller/Out/Value", payload=str(json.dumps(msgChanged)), qos=0, retain=False)   
@@ -152,7 +188,17 @@ class IDDDevice:
 
                     now_time = str(datetime.datetime.now(tz=datetime.timezone.utc)).replace(" ", "T").replace("+00:00","")
 
-                    msgState = {"type":{"data":{"controllerId":self.controllerId, "topic":"/devices/" + self.device_name + "/controls/state", "time":now_time, "value":str(self.device_state["state"])}}, "status": "UPDATE"}
+                    msgState = {
+                        "type":{
+                            "data":{
+                                "controllerId":self.controllerId, 
+                                "topic":"/devices/" + self.device_name + "/controls/state", 
+                                "time":now_time, "value":str(self.device_state["state"])
+                            }
+                        }, 
+                        "status": "UPDATE"
+                    }
+
                     self.mqtt_client.publish("/Controller/Out/Value", payload=str(json.dumps(msgState)), qos=0, retain=False)
             else:
                 self.ping_counter = self.ping_counter + 1
@@ -160,19 +206,46 @@ class IDDDevice:
     def send_idd_state(self):
 
         logging.debug("IDD-driver Try to send states...")
-        if self.device_state[params.VOLTAGE_L1_NAME] == None or self.device_state[params.VOLTAGE_L2_NAME] == None or self.device_state[params.VOLTAGE_L3_NAME] == None:
+        if (
+            self.device_state[params.VOLTAGE_L1_NAME] == None 
+            or self.device_state[params.VOLTAGE_L2_NAME] == None 
+            or self.device_state[params.VOLTAGE_L3_NAME] == None
+        ):
             logging.debug("IDD-driver ERROR Not enough voltage data")
             return
 
-        if self.device_state[params.CURRENT_L1_NAME] == None or self.device_state[params.CURRENT_L2_NAME] == None or self.device_state[params.CURRENT_L3_NAME] == None:
+        if (
+            self.device_state[params.CURRENT_L1_NAME] == None 
+            or self.device_state[params.CURRENT_L2_NAME] == None 
+            or self.device_state[params.CURRENT_L3_NAME] == None
+        ):
             logging.debug("IDD-driver ERROR Not enough current data")
             return
 
         now_time = str(datetime.datetime.now(tz=datetime.timezone.utc)).replace(" ", "T").replace("+00:00","")
 
         #prepare messages:
-        msgState = {"type":{"data":{"controllerId":self.controllerId, "topic":"/devices/" + self.device_name + "/controls/state", "time":now_time, "value":str(self.device_state["state"])}}, "status": "UPDATE"}
-        msgChanged = {"type":{"data":{"controllerId":self.controllerId, "topic":"/devices/" + self.device_name + "/controls/changed", "time":now_time, "value":str(self.device_state["changed_time"])}}, "status": "UPDATE"}
+        msgState = {
+            "type":{
+                "data":{
+                    "controllerId":self.controllerId, 
+                    "topic":"/devices/" + self.device_name + "/controls/state", 
+                    "time":now_time, "value":str(self.device_state["state"])
+                }
+            }, 
+            "status": "UPDATE"
+        }
+
+        msgChanged = {
+            "type":{
+                "data":{
+                    "controllerId":self.controllerId, 
+                    "topic":"/devices/" + self.device_name + "/controls/changed", 
+                    "time":now_time, "value":str(self.device_state["changed_time"])
+                }
+            }, 
+            "status": "UPDATE"
+        }
 
         #sending messages:
         if self.device_state["state"] != "unknown":
