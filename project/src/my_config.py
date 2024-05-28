@@ -2,11 +2,27 @@ import yaml
 import os
 from pathlib import Path
 from constants import *
+from threading import Lock, Thread
+import logging
 
-class MyConfig:
+class MySingletone(type):
+
+    _instances = {}
+    _lock: Lock = Lock()
+  
+    def __call__(cls, *args, **kwargs):
+        with cls._lock:
+            if cls not in cls._instances:
+                instance = super().__call__(*args, **kwargs)
+                cls._instances[cls] = instance
+        return cls._instances[cls]
+
+class MyConfig(metaclass=MySingletone):
 
     def __init__(self, CfgFile = CONFIG_FILE) -> None:
         
+        logging.debug("Load of configuration" )
+
         golden_p = Path(__file__).with_name(CfgFile)
 
         with golden_p.open("r") as golden_f:
@@ -28,3 +44,5 @@ class MyConfig:
 
         self.host = self.CfgData["broker"]["host"]
         self.port = self.CfgData["broker"]["port"]
+
+        logging.debug( 'Broker :' + str(self.host) + ':' + str(self.port) )
