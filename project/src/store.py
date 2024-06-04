@@ -35,16 +35,16 @@ def get_ddg_states():
     except Exception as e:
         logging.info("threre is some problem with system state file")                
 
-    ddg_states_sys = ddg_states_user | ddg_states_sys
+    ddg_states_total = ddg_states_user | ddg_states_sys
 
-    for dev in ddg_states_sys:
+    for dev in ddg_states_total:
         device_name = dev
         value_usr = ddg_states_user[device_name]
 
-        ddg_states_sys[device_name]["model"] = value_usr.get("model", "")
-        ddg_states_sys[device_name]["is_panel"] = value_usr.get("is_panel", "false") 
+        ddg_states_total[device_name]["model"] = value_usr.get("model", ddg_states_total[device_name]["model"])
+        ddg_states_total[device_name]["is_panel"] = value_usr.get("is_panel", ddg_states_total[device_name]["is_panel"]) 
 
-    ddg_states = ddg_states_sys
+    ddg_states = ddg_states_total
 
     return ddg_states
 

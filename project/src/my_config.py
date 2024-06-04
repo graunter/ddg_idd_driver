@@ -20,29 +20,45 @@ class MySingletone(type):
 class MyConfig(metaclass=MySingletone):
 
     def __init__(self, CfgFile = CONFIG_FILE) -> None:
+
+        self.CfgData = {}
+        self.host = "localhost"
+        self.port = 1883
+        self.CfgData["VThreshold"] = 100
+        self.CfgData["IThreshold"] = 1.0
+        self.CfgData["IsPanel"] = False
         
         logging.debug("Load of configuration" )
-
+        
         golden_p = Path(__file__).with_name(CfgFile)
+        system_p = Path( SYSTEM_PATH + COMMON_PATH )/CfgFile
+        user_p = Path.home()/COMMON_PATH/CfgFile
 
-        with golden_p.open("r") as golden_f:
-            self.CfgData = yaml.safe_load(golden_f)
+        logging.debug('golden file: ' + str(golden_p))
+        logging.debug('system file: ' + str(system_p))
+        logging.debug('user file: ' + str(user_p))
 
-        system_p = Path("/etc/ddg-idd-driver/")/CfgFile
+        cfg_files = [golden_p, system_p, user_p]
 
-        if os.path.isfile(system_p):
-            with system_p.open("r") as system_f:
-                s_CfgData = yaml.safe_load(system_f)
-                self.CfgData = self.CfgData | s_CfgData
-
-        user_p = Path.home()/"ddg-idd-driver"/CfgFile
-
-        if os.path.isfile(user_p):
-            with open( user_p ) as user_f:
+        for u_file in cfg_files:
+            with u_file.open("r") as user_f:
                 u_CfgData = yaml.safe_load(user_f)
-                self.CfgData = self.CfgData | u_CfgData
+                self.extract_config(u_CfgData)
 
-        self.host = self.CfgData["broker"]["host"]
-        self.port = self.CfgData["broker"]["port"]
 
-        logging.debug( 'Broker :' + str(self.host) + ':' + str(self.port) )
+    def extract_config(self, CfgData: list):
+                
+        Broker = CfgData.get("broker", {})
+
+        if Broker is not None:
+            self.host = Broker.get("host", self.host)
+            self.port = Broker.get("port", self.port)                 
+
+
+        self.CfgData["VThreshold"] = CfgData.get("VThreshold", self.CfgData["VThreshold"])
+        self.CfgData["IThreshold"] = CfgData.get("IThreshold", self.CfgData["IThreshold"])
+        self.CfgData["IsPanel"] = CfgData.get("IsPanel", self.CfgData["IsPanel"] )
+
+
+if __name__ == "__main__":
+        Cfg = MyConfig()
