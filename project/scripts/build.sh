@@ -1,18 +1,22 @@
 #!/bin/bash
 
-ARCHITECTURE="armhf"
+
 PROJECT_NAME="ddg-idd-driver"
 VERSION="1.0.11"
 BUILD_PLATFORM_ADDRESS=$1
 BUILD_PLATFORM_PORT=$2
 BUILD_PLATFORM_PASS=$3
+BUILD_PLATFORM_USER=$4
+BUILD_PLATFORM_ARCH=$5
 
 # Info: you need sshpass packet for this script:
 # sudo apt-get install sshpass
 
 #build machine settings:
-USER="root"
-BUILD_PATH="~/build-dir-$PROJECT_NAME"
+ARCHITECTURE=$BUILD_PLATFORM_ARCH
+USER=$BUILD_PLATFORM_USER
+#BUILD_PATH="~/build-dir-$PROJECT_NAME"
+BUILD_PATH="build-dir-$PROJECT_NAME"
 DIST_PATH="~/build-dir-$PROJECT_NAME/dist"
 EXE_NAME="$PROJECT_NAME"
 
@@ -27,7 +31,7 @@ rm -rf $OUTPUT_PATH
 
 #copy source to build platform:
 cmd="mkdir -p $BUILD_PATH"
-sshpass -p $BUILD_PLATFORM_PASS ssh $USER@$BUILD_PLATFORM_ADDRESS -p $BUILD_PLATFORM_PORT "$cmd" 
+sshpass -p $BUILD_PLATFORM_PASS ssh $USER@$BUILD_PLATFORM_ADDRESS -p $BUILD_PLATFORM_PORT $cmd
 sshpass -p $BUILD_PLATFORM_PASS scp -P $BUILD_PLATFORM_PORT ../src/*.* $USER@$BUILD_PLATFORM_ADDRESS:$BUILD_PATH
 
 #compile source
