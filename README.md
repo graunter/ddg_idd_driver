@@ -230,12 +230,18 @@ service ddg-idd-driver status   - статус
 - запустить скрипт build.sh с параметрами
     - адрес машины для сборки
     - порт для подключения ssh
-    - пароль пользователя root
+    - пароль пользователя с правами root
+    - имя пользователя с правами root
+    - имя архитектуры для целевой платформы
 
 пример:
 ```
 cd project/scripts
-./build.sh 192.168.1.100 22 test
+./build.sh 192.168.1.100 22 test root armhf
 ```
+###  Копирование на целевое устройство
 
+Для простого копирования собранного deb пакета удобно воспользоваться программй `scp`:
+
+scp -P {ssh_port_number} ddg-idd-driver-{version}-{architecture}.deb {root_user_name}@{target_ip}:{/destination/folder}
 

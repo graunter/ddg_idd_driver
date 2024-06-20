@@ -2,7 +2,7 @@
 
 
 PROJECT_NAME="ddg-idd-driver"
-VERSION="1.0.11"
+VERSION="1.0.12"
 BUILD_PLATFORM_ADDRESS=$1
 BUILD_PLATFORM_PORT=$2
 BUILD_PLATFORM_PASS=$3
@@ -51,7 +51,7 @@ sshpass -p $BUILD_PLATFORM_PASS scp -P $BUILD_PLATFORM_PORT $USER@$BUILD_PLATFOR
 # ssh $USER@$BUILD_PLATFORM_ADDRESS -p $BUILD_PLATFORM_PORT "$cmd" 
 
 cp -a package $OUTPUT_PATH
-cp ../../project/src/config.yaml $PACKAGE_PATH/etc/$PROJECT_NAME/
+cp ../../project/src/config.yaml $PACKAGE_PATH/etc/$PROJECT_NAME/ 
 
 version=$(cat $PACKAGE_PATH/DEBIAN/control | grep 'Version:' | awk '{print$2}')
 dpkg-deb --root-owner-group -Z gzip -b $PACKAGE_PATH "${OUTPUT_PATH}/${EXE_NAME}-${version}-${ARCHITECTURE}.deb"

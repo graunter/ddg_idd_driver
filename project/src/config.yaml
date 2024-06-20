@@ -1,7 +1,18 @@
 VThreshold: 100
 IThreshold: 1.00
 IsPanel: False
+def_model_name: "place DDG model here"
+
+devices: 
+    - name: "bDDGf0r0_bDDGf0r0_27_n1_DDG"
+      model: "User model name"
+      is_panel: "False"
+    - name: "bDDGf0r0_bDDGf0r0_27_n2_DDG"
+      model: "User model name"
+      is_panel: "False"
+
 
 broker:
     host: "localhost"
     port: 1883
+
