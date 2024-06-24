@@ -3,7 +3,7 @@ Package: ddg-idd-driver
 Version: 1.0.12
 Section: misc
 Priority: optional
-Depends: python3 (>= 3.5.3), python3-paho-mqtt (>= 1.5), wb-mqtt-serial, jq
+Depends: python3 (>= 3.5.3), python3-paho-mqtt (>= 1.5), jq
 Maintainer: STDU
 Architecture: all
 Description: Driver DDG and IDD systems.

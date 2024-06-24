@@ -1,6 +1,7 @@
 ddg-idd-driver (1.0.12) stable; urgency=medium
 
-
+[Sergey Zhukov]
+* 1.0.12 - Wrong dependency from MQTT_Modbus was removed
 [Sergey Zhukov]
 * 1.0.12 - Wrong dependency was removed
 [Sergey Zhukov]
