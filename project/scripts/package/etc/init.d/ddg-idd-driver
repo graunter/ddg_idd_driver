@@ -33,7 +33,7 @@ stop() {
   start-stop-daemon --stop --remove-pidfile --pidfile $PIDFILE --retry=TERM/30/KILL/5 --pidfile $PIDFILE
   echo "Service $NAME stopped" >&2
 
-  echo "Service stopped" >> $WORKING_PATH/${NAME}.log
+  echo "Service stopped" >&2
 }
 
 status(){

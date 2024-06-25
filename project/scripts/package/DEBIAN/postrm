@@ -2,5 +2,5 @@
 
 update-rc.d ddg-idd-driver remove
 
-#rm -fr /etc/ddg-idd-driver
+rm -fr ~/ddg-idd-driver/
 

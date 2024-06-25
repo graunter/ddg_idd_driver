@@ -84,7 +84,7 @@ def on_message(client, userdata, msg):
 
     if device_name.startswith("b") and device_name.endswith("_DDG"):
         if device_name not in ddg_states:
-
+            logging.debug("New DDG device detected on Broker: " + device_name)
             store.create_new_ddg(device_name)        
             ddg_device = DDGDevice(client, controllerId, device_name, ddg_states[device_name])
             ddg_list.append(ddg_device)

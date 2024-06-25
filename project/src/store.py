@@ -16,16 +16,7 @@ def get_ddg_states():
         
     global ddg_states 
     
-    InFileNameUser = Path.home() / DDG_STATE_FILE
     InFileNameSys = Path("/etc/") / DDG_STATE_FILE
-
-    ddg_states_user = defaultdict(dict)
-    try:
-        if os.path.isfile(InFileNameUser):
-            with open(InFileNameUser) as f:
-                ddg_states_user = json.load(f)
-    except Exception as e:
-        logging.info("wrong user file with DDG states")
 
     ddg_states_sys = defaultdict(dict)
     try:
@@ -35,16 +26,40 @@ def get_ddg_states():
     except Exception as e:
         logging.info("threre is some problem with system state file")                
 
-    ddg_states_total = ddg_states_user | ddg_states_sys
 
-    for dev in ddg_states_total:
-        device_name = dev
-        value_usr = ddg_states_user[device_name]
+    #for dev in ddg_states_sys:
+    #    device_name = dev
+    #    value_usr = ddg_states_sys[device_name]
 
-        ddg_states_total[device_name]["model"] = value_usr.get("model", ddg_states_total[device_name]["model"])
-        ddg_states_total[device_name]["is_panel"] = value_usr.get("is_panel", ddg_states_total[device_name]["is_panel"]) 
+    #    ddg_states_total[device_name]["model"] = value_usr.get("model", ddg_states_total[device_name]["model"])
+    #    ddg_states_total[device_name]["is_panel"] = value_usr.get("is_panel", ddg_states_total[device_name]["is_panel"]) 
 
-    ddg_states = ddg_states_total
+    try:
+        if os.path.isfile(USR_CFG_FILE_FULL_NAME):
+            with open(USR_CFG_FILE_FULL_NAME) as f:
+                ddg_states_cfg = yaml.safe_load(f)  
+
+                if ddg_states_cfg and ddg_states_cfg["ddg_devices"] is not None:
+                    for item in ddg_states_cfg.get("ddg_devices", []):
+                        old_dev_name = item["name"]
+                        if old_dev_name in ddg_states_sys:
+                            logging.info( "old device was found" + old_dev_name)
+
+                            model = item["model"]
+                            if model != ddg_states_sys[old_dev_name]["model"]:
+                                ddg_states_sys[old_dev_name]["model"] = model
+                            
+                            is_panel = item["is_panel"]
+                            if is_panel != ddg_states_sys[old_dev_name]["is_panel"]:
+                                ddg_states_sys[old_dev_name]["is_panel"] = is_panel
+                            
+
+                        
+    except Exception as e:
+        logging.info("threre is some problem with system state file:" + str(e))    
+
+
+    ddg_states = ddg_states_sys
 
     return ddg_states
 
@@ -61,11 +76,51 @@ def create_new_ddg(device_name):
             "last_start":"None",
             "last_stop":"None",
             "active":0,
-            "model":"place DDG model here",
+            "model":"Default DDG model",
             "is_panel":Cfg.CfgData['IsPanel'],
     }
     
     save_ddg_state(ddg_states)
+
+    #ddg_states_cfg = defaultdict(list)
+
+    try:
+        if os.path.isfile(USR_CFG_FILE_FULL_NAME):
+            with open(USR_CFG_FILE_FULL_NAME) as f:
+                ddg_states_cfg = yaml.safe_load(f)  
+
+                if ddg_states_cfg and ddg_states_cfg["ddg_devices"] is not None:
+                    logging.debug("Update new device parametrs")
+                    found = False
+                    for item in ddg_states_cfg.get("ddg_devices", []):
+                        if item["name"] == device_name:
+                            found = True
+
+                    if not found:
+                        logging.debug("Default record was used")
+                        new_dev_record = {
+                                "name":device_name, 
+                                "model":Cfg.CfgData['def_model_name'], 
+                                "is_panel": Cfg.CfgData['IsPanel']
+                            }
+                        ddg_states_cfg["ddg_devices"].append( new_dev_record )
+
+                else:
+                    logging.info("There is some problem with config file - new one will be created")
+                    ddg_states_cfg = defaultdict(list)
+                    ddg_states_cfg["ddg_devices"].extend([])
+                    ddg_states_cfg = dict(ddg_states_cfg)
+
+            with open(USR_CFG_FILE_FULL_NAME, "w") as f:
+                    yaml.safe_dump(ddg_states_cfg, f)     
+        else:
+            logging.warning("There is no config file:" + USR_CFG_FILE_FULL_NAME)
+                        
+    except Exception as e:
+        logging.warning("threre is some problem with system state file:" + str(e))    
+
+
+
     logging.info("Creating new Device:" + device_name)
     
     return ddg_states[device_name]
@@ -74,14 +129,14 @@ def create_new_ddg(device_name):
 def save_ddg_state(list):   
     logging.debug("Saving ddg state")
 
-    OutFileNameUsr = Path.home() / DDG_STATE_FILE
-    os.makedirs(os.path.dirname(OutFileNameUsr), exist_ok=True)
+    #OutFileNameUsr = Path.home() / DDG_STATE_FILE
+    #os.makedirs(os.path.dirname(OutFileNameUsr), exist_ok=True)
 
     OutFileNameSys = Path("/etc/") / DDG_STATE_FILE
     os.makedirs(os.path.dirname(OutFileNameSys), exist_ok=True)
 
-    with open(OutFileNameUsr, 'w+') as outfile:
-        json.dump(list, outfile, indent=4)
+    #with open(OutFileNameUsr, 'w+') as outfile:
+    #    json.dump(list, outfile, indent=4)
     
     with open(OutFileNameSys, 'w+') as outfile:
         json.dump(list, outfile, indent=4)
@@ -183,3 +238,9 @@ def get_controller_id():
         controllerId = controllerId.read().replace("\n","")
     
     return controllerId
+
+if __name__ == "__main__":
+    loglevel = logging.DEBUG
+    logging.basicConfig(level=loglevel)
+    #get_ddg_states()
+    create_new_ddg("Test_dev")

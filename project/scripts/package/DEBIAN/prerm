@@ -3,8 +3,8 @@
 service ddg-idd-driver stop
 
 rm -f /etc/ddg-idd-driver/ddg-idd-driver.log
-rm -f /var/log/ddg-idd-driver/*
-rmdir /var/log/ddg-idd-driver
+rm -fr /var/log/ddg-idd-driver/
+
 
 # rm -f /etc/ddg-idd-driver/ddg_states.json
 # rm -f /etc/ddg-idd-driver/idd_states.json

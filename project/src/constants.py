@@ -1,11 +1,10 @@
 CONFIG_FILE = "config.yaml"
-
+ 
 COMMON_PATH = "ddg-idd-driver/"
 SYSTEM_PATH = "/etc/"
-
-
 
 DDG_STATE_FILE = COMMON_PATH + "ddg_states.json"
 IDD_STATE_FILE = COMMON_PATH + "idd_states.json"
 
 INDEX_FILE_FULL_NAME = "/var/inspark/index"
+USR_CFG_FILE_FULL_NAME = "/etc/ddg-idd-driver/user_config.yaml"

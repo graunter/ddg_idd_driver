@@ -27,6 +27,7 @@ class MyConfig(metaclass=MySingletone):
         self.CfgData["VThreshold"] = 100
         self.CfgData["IThreshold"] = 1.0
         self.CfgData["IsPanel"] = False
+        self.CfgData["def_model_name"] = "Def name"
         
         logging.debug("Load of configuration" )
         
@@ -46,7 +47,7 @@ class MyConfig(metaclass=MySingletone):
                     u_CfgData = yaml.safe_load(user_f)
                     self.extract_config(u_CfgData)
             except Exception as e:
-                    logging.error("YAML file " + user_f.name + " is incorrect and will be skipped: " + ': Message: ' + format(e) )
+                    logging.error("YAML file " + str(u_file) + " is incorrect and will be skipped: " + ': Message: ' + format(e) )
                     pass     
 
 
@@ -62,6 +63,7 @@ class MyConfig(metaclass=MySingletone):
         self.CfgData["VThreshold"] = CfgData.get("VThreshold", self.CfgData["VThreshold"])
         self.CfgData["IThreshold"] = CfgData.get("IThreshold", self.CfgData["IThreshold"])
         self.CfgData["IsPanel"] = CfgData.get("IsPanel", self.CfgData["IsPanel"] )
+        self.CfgData["def_model_name"] = CfgData.get("def_model_name", self.CfgData["IsPanel"] )
 
 
 if __name__ == "__main__":
