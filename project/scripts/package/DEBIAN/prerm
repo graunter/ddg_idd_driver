@@ -6,6 +6,6 @@ rm -f /etc/ddg-idd-driver/ddg-idd-driver.log
 rm -fr /var/log/ddg-idd-driver/
 
 
-# rm -f /etc/ddg-idd-driver/ddg_states.json
-# rm -f /etc/ddg-idd-driver/idd_states.json
+ rm -f /etc/ddg-idd-driver/ddg_states.json
+ rm -f /etc/ddg-idd-driver/idd_states.json
 # rm -fr /etc/ddg-idd-driver/__pycache__
